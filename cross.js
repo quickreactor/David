@@ -487,6 +487,7 @@ function updateCluesUI() {
 
   // Otherwise, assign values
   let acrossClue = xw.clues[[current.row, current.acrossStartIndex, ACROSS]];
+  console.log("a: ", acrossClue, acrossClue == undefined)
   if (acrossClue == undefined) {
     acrossClueNumber.innerHTML = "";
     acrossClueText.innerHTML = "";
@@ -495,8 +496,8 @@ function updateCluesUI() {
     acrossClueNumber.innerHTML = acrossCell.firstChild.innerHTML + "a.";
     acrossClueText.innerHTML = acrossClue;
   }
-
   let downClue = xw.clues[[current.downStartIndex, current.col, DOWN]];
+  console.log("d: ", downClue, downClue == undefined)
   if (downClue == undefined) {
     downClueNumber.innerHTML = "";
     downClueText.innerHTML = "";
@@ -597,8 +598,7 @@ function updateActiveWords() {
   current.acrossWord = getWordAt(current.row, current.col, ACROSS, true);
   current.downWord = getWordAt(current.row, current.col, DOWN, true);
 
-  console.log(current.acrossWord.length)
-  console.log(current.downWord.length)
+  console.log("clue length: ", current.acrossWord.length, current.downWord.length)
 
   if (current.acrossWord.length == 1) {
     console.log("CLEAR ACROSS")
@@ -657,6 +657,7 @@ function getWordAt(row, col, direction, setCurrentWordIndices) {
       [current.downStartIndex, current.downEndIndex] = [start, end];
     }
   }
+
   return text.slice(start, end);
 }
 
@@ -710,10 +711,12 @@ function updateSidebarHighlights() {
 }
 
 function setClues() {
-    xw.clues[[current.row, current.acrossStartIndex, ACROSS]] = document.getElementById("across-clue-text").innerHTML;
-    xw.clues[[current.downStartIndex, current.col, DOWN]] = document.getElementById("down-clue-text").innerHTML;
-    console.log("Stored clue:", xw.clues[[current.row, current.acrossStartIndex, ACROSS]], "at [" + current.row + "," + current.acrossStartIndex + "]");
-    console.log("Stored clue:", xw.clues[[current.downStartIndex, current.col, DOWN]], "at [" + current.downStartIndex + "," + current.col + "]");
+  let aClue = document.getElementById("across-clue-text").innerHTML;
+  let dClue = document.getElementById("down-clue-text").innerHTML;
+  if (aClue.length > 0) xw.clues[[current.row, current.acrossStartIndex, ACROSS]] = aClue;
+  if (dClue.length > 0) xw.clues[[current.downStartIndex, current.col, DOWN]] = dClue;
+  // console.log("Stored clue:", xw.clues[[current.row, current.acrossStartIndex, ACROSS]], "at [" + current.row + "," + current.acrossStartIndex + "]");
+  //console.log("Stored clue:", xw.clues[[current.downStartIndex, current.col, DOWN]], "at [" + current.downStartIndex + "," + current.col + "]");
 }
 
 function setTitle() {
