@@ -539,8 +539,20 @@ function updateLabelsAndClues() {
       let isAcross = false;
       let isDown = false;
       if (xw.fill[i][j] != BLACK) {
-        isDown = i == 0 || xw.fill[i - 1][j] == BLACK;
-        isAcross = j == 0 || xw.fill[i][j - 1] == BLACK;
+        let isFirstRow = i == 0;
+        let isLastRow = i == xw.rows - 1;
+        let isFirstCol = j == 0;
+        let isLastCol = j == xw.cols - 1;
+        let isLeftBlack = isFirstCol ? true : xw.fill[i][j - 1] == BLACK;
+        let isRightBlack = isLastCol ? true : xw.fill[i][j + 1] == BLACK;
+        let isAboveBlack = isFirstRow ? true : xw.fill[i - 1][j] == BLACK;
+        let isBelowBlack = isLastRow ? true : xw.fill[i + 1][j] == BLACK;
+
+        isDown = isAboveBlack && !isBelowBlack;
+        isAcross = isLeftBlack && !isRightBlack;
+
+        // isDown = i == 0 || xw.fill[i - 1][j] == BLACK && i == xw.rows - 1 || xw.fill[i + 1][j] != BLACK; 
+        // isAcross = j == 0 || xw.fill[i][j - 1] == BLACK && j == xw.cols - 1 || xw.fill[i][j + 1] != BLACK;
       }
       const grid = document.getElementById("grid");
       let currentCell = grid.querySelector('[data-row="' + i + '"]').querySelector('[data-col="' + j + '"]');
