@@ -486,14 +486,12 @@ function updateCluesUI() {
   }
 
   // Otherwise, assign values
-  const acrossCell = grid.querySelector('[data-row="' + current.row + '"]').querySelector('[data-col="' + current.acrossStartIndex + '"]');
-  const downCell = grid.querySelector('[data-row="' + current.downStartIndex + '"]').querySelector('[data-col="' + current.col + '"]');
-  
   let acrossClue = xw.clues[[current.row, current.acrossStartIndex, ACROSS]];
   if (acrossClue == undefined) {
     acrossClueNumber.innerHTML = "";
     acrossClueText.innerHTML = "";
   } else {
+    const acrossCell = grid.querySelector('[data-row="' + current.row + '"]').querySelector('[data-col="' + current.acrossStartIndex + '"]');
     acrossClueNumber.innerHTML = acrossCell.firstChild.innerHTML + "a.";
     acrossClueText.innerHTML = acrossClue;
   }
@@ -503,6 +501,7 @@ function updateCluesUI() {
     downClueNumber.innerHTML = "";
     downClueText.innerHTML = "";
   } else {
+    const downCell = grid.querySelector('[data-row="' + current.downStartIndex + '"]').querySelector('[data-col="' + current.col + '"]');
     downClueNumber.innerHTML = downCell.firstChild.innerHTML + "d.";
     downClueText.innerHTML = downClue;
   }
@@ -594,7 +593,32 @@ function updateLabelsAndClues() {
 }
 
 function updateActiveWords() {
-  if (xw.fill[current.row][current.col] == BLACK) {
+  // get current words
+  current.acrossWord = getWordAt(current.row, current.col, ACROSS, true);
+  current.downWord = getWordAt(current.row, current.col, DOWN, true);
+
+  console.log(current.acrossWord.length)
+  console.log(current.downWord.length)
+
+  if (current.acrossWord.length == 1) {
+    console.log("CLEAR ACROSS")
+    current.acrossWord = '';
+    current.acrossStartIndex = null;
+    current.acrossEndIndex = null;
+  } else {
+    current.acrossWord = getWordAt(current.row, current.col, ACROSS, true);
+  }
+
+  if (current.downWord.length == 1) {
+    console.log("CLEAR DOWN")
+    current.downWord = '';
+    current.downStartIndex = null;
+    current.downEndIndex = null;
+  } else {
+    current.downWord = getWordAt(current.row, current.col, DOWN, true);
+  }
+  
+  /*if (xw.fill[current.row][current.col] == BLACK) {
     current.acrossWord = '';
     current.downWord = '';
     current.acrossStartIndex = null;
@@ -604,7 +628,9 @@ function updateActiveWords() {
   } else {
     current.acrossWord = getWordAt(current.row, current.col, ACROSS, true);
     current.downWord = getWordAt(current.row, current.col, DOWN, true);
-  }
+
+    
+  }*/
   document.getElementById("across-word").innerHTML = current.acrossWord;
   document.getElementById("down-word").innerHTML = current.downWord;
   // console.log("Across:", current.acrossWord, "Down:", current.downWord);
@@ -674,7 +700,7 @@ function updateSidebarHighlights() {
   acrossHeading.classList.remove("highlight");
   downHeading.classList.remove("highlight");
 
-  if (!currentCell.classList.contains("black")) {
+  if (!currentCell.firstChild.textContent == "") {
     if (current.direction == ACROSS) {
       acrossHeading.classList.add("highlight");
     } else {
