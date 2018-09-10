@@ -474,22 +474,38 @@ function updateCluesUI() {
   let acrossClueText = document.getElementById("across-clue-text");
   let downClueText = document.getElementById("down-clue-text");
   // const currentCell = grid.querySelector('[data-row="' + current.row + '"]').querySelector('[data-col="' + current.col + '"]');
+  let isCurrentCellBlack = xw.fill[current.row][current.col] == BLACK;
 
-  // If the current cell is black, empty interface and get out
-  if (xw.fill[current.row][current.col] == BLACK) {
+  // If the current cell is not numbered, empty interface and get out
+  if (isCurrentCellBlack) {
     acrossClueNumber.innerHTML = "";
     downClueNumber.innerHTML = "";
     acrossClueText.innerHTML = "";
     downClueText.innerHTML = "";
     return;
   }
+
   // Otherwise, assign values
   const acrossCell = grid.querySelector('[data-row="' + current.row + '"]').querySelector('[data-col="' + current.acrossStartIndex + '"]');
   const downCell = grid.querySelector('[data-row="' + current.downStartIndex + '"]').querySelector('[data-col="' + current.col + '"]');
-  acrossClueNumber.innerHTML = acrossCell.firstChild.innerHTML + "a.";
-  downClueNumber.innerHTML = downCell.firstChild.innerHTML + "d.";
-  acrossClueText.innerHTML = xw.clues[[current.row, current.acrossStartIndex, ACROSS]];
-  downClueText.innerHTML = xw.clues[[current.downStartIndex, current.col, DOWN]];
+  
+  let acrossClue = xw.clues[[current.row, current.acrossStartIndex, ACROSS]];
+  if (acrossClue == undefined) {
+    acrossClueNumber.innerHTML = "";
+    acrossClueText.innerHTML = "";
+  } else {
+    acrossClueNumber.innerHTML = acrossCell.firstChild.innerHTML + "a.";
+    acrossClueText.innerHTML = acrossClue;
+  }
+
+  let downClue = xw.clues[[current.downStartIndex, current.col, DOWN]];
+  if (downClue == undefined) {
+    downClueNumber.innerHTML = "";
+    downClueText.innerHTML = "";
+  } else {
+    downClueNumber.innerHTML = downCell.firstChild.innerHTML + "d.";
+    downClueText.innerHTML = downClue;
+  }
 }
 
 function updateInfoUI() {
@@ -670,8 +686,8 @@ function updateSidebarHighlights() {
 function setClues() {
     xw.clues[[current.row, current.acrossStartIndex, ACROSS]] = document.getElementById("across-clue-text").innerHTML;
     xw.clues[[current.downStartIndex, current.col, DOWN]] = document.getElementById("down-clue-text").innerHTML;
-    // console.log("Stored clue:", xw.clues[[current.row, current.acrossStartIndex, ACROSS]], "at [" + current.row + "," + current.acrossStartIndex + "]");
-    // console.log("Stored clue:", xw.clues[[current.downStartIndex, current.col, DOWN]], "at [" + current.downStartIndex + "," + current.col + "]");
+    console.log("Stored clue:", xw.clues[[current.row, current.acrossStartIndex, ACROSS]], "at [" + current.row + "," + current.acrossStartIndex + "]");
+    console.log("Stored clue:", xw.clues[[current.downStartIndex, current.col, DOWN]], "at [" + current.downStartIndex + "," + current.col + "]");
 }
 
 function setTitle() {
