@@ -323,12 +323,33 @@ function createNewPuzzle(rows, cols) {
   console.log("New puzzle created.")
 }
 
+function makeDirection(d) {
+  let toDir = null; 
+  // console.log('togg')
+  if (d == null || d == undefined) {
+    toDir = (current.direction == ACROSS) ? DOWN : ACROSS;
+  } else {
+    if (d == ACROSS || d == DOWN) {
+      toDir = d;
+    }
+  }
+
+  // // do pre-check to never change direction across single-white squares
+  // let noAcross = toDir == ACROSS && current.acrossWord.length == 0;
+  // let noDown = toDir == DOWN && current.downWord.length == 0;
+  // if (noAcross || noDown) return
+
+  // set dir
+  current.direction = toDir;
+}
+
 function mouseHandler(e) {
   const previousCell = grid.querySelector('[data-row="' + current.row + '"]').querySelector('[data-col="' + current.col + '"]');
   previousCell.classList.remove("active");
   const activeCell = e.currentTarget;
   if (activeCell == previousCell) {
-    current.direction = (current.direction == ACROSS) ? DOWN : ACROSS;
+    makeDirection();
+    // current.direction = (current.direction == ACROSS) ? DOWN : ACROSS;
   }
   current.row = Number(activeCell.parentNode.dataset.row);
   current.col = Number(activeCell.dataset.col);
@@ -375,7 +396,8 @@ function keyboardHandler(e) {
       isMutated = true;
   }
   if (e.which == keyboard.enter) {
-      current.direction = (current.direction == ACROSS) ? DOWN : ACROSS;
+    makeDirection();
+      // current.direction = (current.direction == ACROSS) ? DOWN : ACROSS;
   }
   if (e.which == keyboard.delete) {
     e.preventDefault();
@@ -405,25 +427,25 @@ function keyboardHandler(e) {
           if (current.direction == ACROSS || content == BLACK) {
             current.col -= (current.col == 0) ? 0 : 1;
           }
-          current.direction = ACROSS;
+          makeDirection(ACROSS) ;
           break;
         case keyboard.up:
           if (current.direction == DOWN || content == BLACK) {
             current.row -= (current.row == 0) ? 0 : 1;
           }
-          current.direction = DOWN;
+          makeDirection(DOWN) ;
           break;
         case keyboard.right:
           if (current.direction == ACROSS || content == BLACK) {
             current.col += (current.col == xw.cols - 1) ? 0 : 1;
           }
-          current.direction = ACROSS;
+          makeDirection(ACROSS) ;
           break;
         case keyboard.down:
           if (current.direction == DOWN || content == BLACK) {
             current.row += (current.row == xw.rows - 1) ? 0 : 1;
           }
-          current.direction = DOWN;
+          makeDirection(DOWN) ;
           break;
       }
       console.log("[" + current.row + "," + current.col + "]");
@@ -487,7 +509,7 @@ function updateCluesUI() {
 
   // Otherwise, assign values
   let acrossClue = xw.clues[[current.row, current.acrossStartIndex, ACROSS]];
-  console.log("a: ", acrossClue, acrossClue == undefined)
+  // console.log("a: ", acrossClue, acrossClue == undefined)
   if (acrossClue == undefined) {
     acrossClueNumber.innerHTML = "";
     acrossClueText.innerHTML = "";
@@ -497,7 +519,7 @@ function updateCluesUI() {
     acrossClueText.innerHTML = acrossClue;
   }
   let downClue = xw.clues[[current.downStartIndex, current.col, DOWN]];
-  console.log("d: ", downClue, downClue == undefined)
+  // console.log("d: ", downClue, downClue == undefined)
   if (downClue == undefined) {
     downClueNumber.innerHTML = "";
     downClueText.innerHTML = "";
@@ -601,7 +623,7 @@ function updateActiveWords() {
   console.log("clue length: ", current.acrossWord.length, current.downWord.length)
 
   if (current.acrossWord.length == 1) {
-    console.log("CLEAR ACROSS")
+    // console.log("CLEAR ACROSS")
     current.acrossWord = '';
     current.acrossStartIndex = null;
     current.acrossEndIndex = null;
@@ -610,7 +632,7 @@ function updateActiveWords() {
   }
 
   if (current.downWord.length == 1) {
-    console.log("CLEAR DOWN")
+    // console.log("CLEAR DOWN")
     current.downWord = '';
     current.downStartIndex = null;
     current.downEndIndex = null;
@@ -701,7 +723,7 @@ function updateSidebarHighlights() {
   acrossHeading.classList.remove("highlight");
   downHeading.classList.remove("highlight");
 
-  if (!currentCell.firstChild.textContent == "") {
+  if (!currentCell.classList.contains("black")) {
     if (current.direction == ACROSS) {
       acrossHeading.classList.add("highlight");
     } else {
