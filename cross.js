@@ -421,7 +421,7 @@ function keyboardHandler(e) {
       e.preventDefault();
       const previousCell = grid.querySelector('[data-row="' + current.row + '"]').querySelector('[data-col="' + current.col + '"]');
       previousCell.classList.remove("active");
-      let content = xw.fill[current.row][current.col];
+      // let content = xw.fill[current.row][current.col];
       switch (e.which) {
         case keyboard.left:
           // if (current.direction == ACROSS || content == BLACK) {
@@ -459,6 +459,15 @@ function updateUI() {
   if (isMutated) {
     autoFill(true);  // quick fill
   }
+
+  // change direction on single-whites
+  var word = getWordAt(current.row, current.col, current.direction, true);
+  if (word.length == 1 && word != "#") {
+    changeDirection();
+  }
+
+  //
+
   updateGridUI();
   updateLabelsAndClues();
   updateActiveWords();
