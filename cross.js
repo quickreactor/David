@@ -528,6 +528,7 @@ function updateCluesUI() {
     downClueNumber.innerHTML = downCell.firstChild.innerHTML + "d.";
     downClueText.innerHTML = downClue;
   }
+
 }
 
 function updateInfoUI() {
@@ -620,9 +621,7 @@ function updateActiveWords() {
   current.acrossWord = getWordAt(current.row, current.col, ACROSS, true);
   current.downWord = getWordAt(current.row, current.col, DOWN, true);
 
-  console.log("clue length: ", current.acrossWord.length, current.downWord.length)
-
-  if (current.acrossWord.length == 1) {
+  if (current.acrossWord == null || current.acrossWord.length == 1) {
     // console.log("CLEAR ACROSS")
     current.acrossWord = '';
     current.acrossStartIndex = null;
@@ -631,7 +630,7 @@ function updateActiveWords() {
     current.acrossWord = getWordAt(current.row, current.col, ACROSS, true);
   }
 
-  if (current.downWord.length == 1) {
+  if (current.downWord == null || current.downWord.length == 1) {
     // console.log("CLEAR DOWN")
     current.downWord = '';
     current.downStartIndex = null;
@@ -660,6 +659,14 @@ function updateActiveWords() {
 }
 
 function getWordAt(row, col, direction, setCurrentWordIndices) {
+
+  // bail on black squares
+  if (xw.fill[current.row][current.col] == BLACK) {
+    // return a single-letter so the length == 1 check works for both black squares and orphan letters
+    return "#"
+  }
+
+  //
   let text = "";
   let [start, end] = [0, 0];
   if (direction == ACROSS) {
