@@ -323,7 +323,7 @@ function createNewPuzzle(rows, cols) {
   console.log("New puzzle created.")
 }
 
-function makeDirection(d) {
+function changeDirection(d) {
   let toDir = null; 
   // console.log('togg')
   if (d == null || d == undefined) {
@@ -348,7 +348,7 @@ function mouseHandler(e) {
   previousCell.classList.remove("active");
   const activeCell = e.currentTarget;
   if (activeCell == previousCell) {
-    makeDirection();
+    changeDirection();
     // current.direction = (current.direction == ACROSS) ? DOWN : ACROSS;
   }
   current.row = Number(activeCell.parentNode.dataset.row);
@@ -396,7 +396,7 @@ function keyboardHandler(e) {
       isMutated = true;
   }
   if (e.which == keyboard.enter) {
-    makeDirection();
+    changeDirection();
       // current.direction = (current.direction == ACROSS) ? DOWN : ACROSS;
   }
   if (e.which == keyboard.delete) {
@@ -424,28 +424,28 @@ function keyboardHandler(e) {
       let content = xw.fill[current.row][current.col];
       switch (e.which) {
         case keyboard.left:
-          if (current.direction == ACROSS || content == BLACK) {
+          // if (current.direction == ACROSS || content == BLACK) {
             current.col -= (current.col == 0) ? 0 : 1;
-          }
-          makeDirection(ACROSS) ;
+          // }
+          changeDirection(ACROSS) ;
           break;
         case keyboard.up:
-          if (current.direction == DOWN || content == BLACK) {
+          // if (current.direction == DOWN || content == BLACK) {
             current.row -= (current.row == 0) ? 0 : 1;
-          }
-          makeDirection(DOWN) ;
+          // }
+          changeDirection(DOWN) ;
           break;
         case keyboard.right:
-          if (current.direction == ACROSS || content == BLACK) {
+          // if (current.direction == ACROSS || content == BLACK) {
             current.col += (current.col == xw.cols - 1) ? 0 : 1;
-          }
-          makeDirection(ACROSS) ;
+          // }
+          changeDirection(ACROSS) ;
           break;
         case keyboard.down:
-          if (current.direction == DOWN || content == BLACK) {
+          // if (current.direction == DOWN || content == BLACK) {
             current.row += (current.row == xw.rows - 1) ? 0 : 1;
-          }
-          makeDirection(DOWN) ;
+          // }
+          changeDirection(DOWN) ;
           break;
       }
       console.log("[" + current.row + "," + current.col + "]");
