@@ -367,21 +367,27 @@ function keyboardHandler(e) {
   const symCol = xw.cols - 1 - current.col;
 
   if ((e.which >= keyboard.a && e.which <= keyboard.z) || e.which == keyboard.space) {
+
     let oldContent = xw.fill[current.row][current.col];
-    xw.fill[current.row] = xw.fill[current.row].slice(0, current.col) + String.fromCharCode(e.which) + xw.fill[current.row].slice(current.col + 1);
-    if (oldContent == BLACK) {
-      if (isSymmetrical) {
-        xw.fill[symRow] = xw.fill[symRow].slice(0, symCol) + BLANK + xw.fill[symRow].slice(symCol + 1);
+    if (oldContent != BLACK) {
+    
+      // this line changes letters
+      xw.fill[current.row] = xw.fill[current.row].slice(0, current.col) + String.fromCharCode(e.which) + xw.fill[current.row].slice(current.col + 1);
+      /*if (oldContent == BLACK) {
+        if (isSymmetrical) {
+          xw.fill[symRow] = xw.fill[symRow].slice(0, symCol) + BLANK + xw.fill[symRow].slice(symCol + 1);
+        }
+      }*/
+      // move the cursor
+      e = new Event('keydown');
+      if (current.direction == ACROSS) {
+        e.which = keyboard.right;
+      } else {
+        e.which = keyboard.down;
       }
+      isMutated = true;
     }
-    // move the cursor
-    e = new Event('keydown');
-    if (current.direction == ACROSS) {
-      e.which = keyboard.right;
-    } else {
-      e.which = keyboard.down;
-    }
-    isMutated = true;
+    
   }
   if (e.which == keyboard.black) {
       if (xw.fill[current.row][current.col] == BLACK) { // if already black...
