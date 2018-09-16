@@ -353,7 +353,7 @@ function mouseHandler(e) {
   }
   current.row = Number(activeCell.parentNode.dataset.row);
   current.col = Number(activeCell.dataset.col);
-  console.log("[" + current.row + "," + current.col + "]");
+  // console.log("[" + current.row + "," + current.col + "]");
   activeCell.classList.add("active");
 
   isMutated = false;
@@ -454,7 +454,7 @@ function keyboardHandler(e) {
           changeDirection(DOWN) ;
           break;
       }
-      console.log("[" + current.row + "," + current.col + "]");
+      // console.log("[" + current.row + "," + current.col + "]");
       activeCell = grid.querySelector('[data-row="' + current.row + '"]').querySelector('[data-col="' + current.col + '"]');
       activeCell.classList.add("active");
   }

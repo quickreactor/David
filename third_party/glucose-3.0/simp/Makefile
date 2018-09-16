@@ -1,6 +1,7 @@
 EXEC = glucose
 DEPDIR    = mtl utils core
-MROOT = $(PWD)/..
+MROOT = C:/dan/projects/crosswords/phil/third_party/glucose-3.0/
+# MROOT = $(PWD)/..
 
 include $(MROOT)/mtl/template.mk
 
