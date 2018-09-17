@@ -372,7 +372,6 @@ function keyboardHandler(e) {
     // flags
     isMutated = false;
     let symMutated = false;
-    const isFakeEvent = e.key == undefined;
 
     // symmetry
     const symRow = xw.rows - 1 - current.row;
@@ -478,6 +477,11 @@ function keyboardHandler(e) {
           }
           isMutated = true;
       }
+
+      // check if event is original keypress or fake keydown dispatched event
+      const isFakeEvent = e.key == undefined;
+      console.log('is fake', isFakeEvent, e.which, e.key, e.key == undefined);
+
       // save to history before cursor is moved
       if (!isFakeEvent && isMutated) {
         
@@ -526,8 +530,8 @@ function keyboardHandler(e) {
               break;
             case keyboard.right:
               // if (current.direction == ACROSS || content == BLACK) {
-                isNextBlack = xw.fill[current.row][current.col + 1] == BLACK;
-                if (!isFakeEvent || (isFakeEvent && !isNextBlack)) current.col += (current.col == xw.cols - 1) ? 0 : 1;
+                isNextBlack = xw.fill[current.row][current.col + 1]
+                if (!isFakeEvent || (isFakeEvent && isNextBlack != BLACK)) current.col += (current.col == xw.cols - 1) ? 0 : 1;
               // }
               changeDirection(ACROSS) ;
               break;
