@@ -353,7 +353,7 @@ function mouseHandler(e) {
   }
   current.row = Number(activeCell.parentNode.dataset.row);
   current.col = Number(activeCell.dataset.col);
-  console.log("[" + current.row + "," + current.col + "]");
+  // console.log("[" + current.row + "," + current.col + "]");
   activeCell.classList.add("active");
 
   isMutated = false;
@@ -361,6 +361,7 @@ function mouseHandler(e) {
 }
 
 function keyboardHandler(e) {
+  // console.log(e)
   isMutated = false;
   let activeCell = grid.querySelector('[data-row="' + current.row + '"]').querySelector('[data-col="' + current.col + '"]');
   const symRow = xw.rows - 1 - current.row;
@@ -428,33 +429,39 @@ function keyboardHandler(e) {
       const previousCell = grid.querySelector('[data-row="' + current.row + '"]').querySelector('[data-col="' + current.col + '"]');
       previousCell.classList.remove("active");
       // let content = xw.fill[current.row][current.col];
+      let isNextBlack;
+      let isFakeEvent = e.key == undefined;
       switch (e.which) {
         case keyboard.left:
           // if (current.direction == ACROSS || content == BLACK) {
-            current.col -= (current.col == 0) ? 0 : 1;
+            isNextBlack = xw.fill[current.row][current.col - 1] == BLACK;
+            if (!isFakeEvent || (isFakeEvent && !isNextBlack)) current.col -= (current.col == 0) ? 0 : 1;
           // }
           changeDirection(ACROSS) ;
           break;
         case keyboard.up:
           // if (current.direction == DOWN || content == BLACK) {
-            current.row -= (current.row == 0) ? 0 : 1;
+            isNextBlack = xw.fill[current.row - 1][current.col] == BLACK;
+            if (!isFakeEvent || (isFakeEvent && !isNextBlack)) current.row -= (current.row == 0) ? 0 : 1;
           // }
           changeDirection(DOWN) ;
           break;
         case keyboard.right:
           // if (current.direction == ACROSS || content == BLACK) {
-            current.col += (current.col == xw.cols - 1) ? 0 : 1;
+            isNextBlack = xw.fill[current.row][current.col + 1] == BLACK;
+            if (!isFakeEvent || (isFakeEvent && !isNextBlack)) current.col += (current.col == xw.cols - 1) ? 0 : 1;
           // }
           changeDirection(ACROSS) ;
           break;
         case keyboard.down:
           // if (current.direction == DOWN || content == BLACK) {
-            current.row += (current.row == xw.rows - 1) ? 0 : 1;
+            isNextBlack = xw.fill[current.row + 1][current.col] == BLACK;
+            if (!isFakeEvent || (isFakeEvent && !isNextBlack)) current.row += (current.row == xw.rows - 1) ? 0 : 1;
           // }
           changeDirection(DOWN) ;
           break;
       }
-      console.log("[" + current.row + "," + current.col + "]");
+      // console.log("[" + current.row + "," + current.col + "]");
       activeCell = grid.querySelector('[data-row="' + current.row + '"]').querySelector('[data-col="' + current.col + '"]');
       activeCell.classList.add("active");
   }
