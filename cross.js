@@ -25,7 +25,8 @@ const keyboard = {
   "left":   37,
   "up":     38,
   "right":  39,
-  "down":   40
+  "down":   40,
+  // "ctrl":   17
 };
 const BLACK = ".";
 const DASH = "-";
@@ -38,7 +39,7 @@ const DEFAULT_AUTHOR = "Anonymous";
 const DEFAULT_CLUE = "(blank clue)";
 const DEFAULT_NOTIFICATION_LIFETIME = 10; // in seconds
 
-let history = [];
+let history = {pos: null, steps: []};
 let isSymmetrical = true;
 let grid = undefined;
 let squares = undefined;
@@ -361,111 +362,187 @@ function mouseHandler(e) {
 }
 
 function keyboardHandler(e) {
-  // console.log(e)
-  isMutated = false;
-  let activeCell = grid.querySelector('[data-row="' + current.row + '"]').querySelector('[data-col="' + current.col + '"]');
-  const symRow = xw.rows - 1 - current.row;
-  const symCol = xw.cols - 1 - current.col;
 
-  if ((e.which >= keyboard.a && e.which <= keyboard.z) || e.which == keyboard.space) {
+  let approvedInputs = Object.entries(keyboard);
+  let isApprovedInput = approvedInputs.filter(item => { return item[1] == e.which}).length > 0;
 
+  // only run if key is in the supported keyboard list
+  if (isApprovedInput) {
+
+    // flags
+    isMutated = false;
+    let symMutated = false;
+    const isFakeEvent = e.key == undefined;
+
+    // symmetry
+    const symRow = xw.rows - 1 - current.row;
+    const symCol = xw.cols - 1 - current.col;
     let oldContent = xw.fill[current.row][current.col];
-    if (oldContent != BLACK) {
-    
-      // this line changes letters
-      xw.fill[current.row] = xw.fill[current.row].slice(0, current.col) + String.fromCharCode(e.which) + xw.fill[current.row].slice(current.col + 1);
-      /*if (oldContent == BLACK) {
-        if (isSymmetrical) {
-          xw.fill[symRow] = xw.fill[symRow].slice(0, symCol) + BLANK + xw.fill[symRow].slice(symCol + 1);
+    let oldSymContent = xw.fill[symRow][symCol];
+
+    // get cells, deactivate old one every time
+    let activeCell = grid.querySelector('[data-row="' + current.row + '"]').querySelector('[data-col="' + current.col + '"]');
+    const previousCell = grid.querySelector('[data-row="' + current.row + '"]').querySelector('[data-col="' + current.col + '"]');
+    previousCell.classList.remove("active");
+  
+    // if control is held, check for undo/redo
+    if (e.ctrlKey) {
+      
+      // call from history
+      if (e.which == keyboard.z || e.which == keyboard.y) {
+        if (e.which == keyboard.z) {
+          // undo
+          let lastStep = history.steps[history.pos];
+          
+          // undo last square
+          xw.fill[lastStep.row] = xw.fill[lastStep.row].slice(0, lastStep.col) + lastStep.before + xw.fill[lastStep.row].slice(lastStep.col + 1);
+          current.row = lastStep.row;
+          current.col = lastStep.col;
+
+          // if symmetrical was provided
+          if (lastStep.sym) {
+
+            // undo symmetrical square to match
+            xw.fill[lastStep.sym.row] = xw.fill[lastStep.sym.row].slice(0, lastStep.sym.col) + lastStep.sym.before + xw.fill[lastStep.sym.row].slice(lastStep.sym.col + 1);          
+          }
+        // } else if (e.which == keyboard.y){
+          // redo
         }
-      }*/
-      // move the cursor
-      e = new Event('keydown');
-      if (current.direction == ACROSS) {
-        e.which = keyboard.right;
-      } else {
-        e.which = keyboard.down;
       }
-      isMutated = true;
+
+    } else {
+
+      // normal keypresses
+      if ((e.which >= keyboard.a && e.which <= keyboard.z) || e.which == keyboard.space) {
+        if (oldContent != BLACK) {
+        
+          // this line changes letters
+          xw.fill[current.row] = xw.fill[current.row].slice(0, current.col) + String.fromCharCode(e.which) + xw.fill[current.row].slice(current.col + 1);
+          /*if (oldContent == BLACK) {
+            if (isSymmetrical) {
+              xw.fill[symRow] = xw.fill[symRow].slice(0, symCol) + BLANK + xw.fill[symRow].slice(symCol + 1);
+            }
+          }*/
+          // move the cursor
+          e = new Event('keydown');
+          if (current.direction == ACROSS) {
+            e.which = keyboard.right;
+          } else {
+            e.which = keyboard.down;
+          }
+          isMutated = true;
+        }
+        
+      }
+      if (e.which == keyboard.black) {
+          if (xw.fill[current.row][current.col] == BLACK) { // if already black...
+            e = new Event('keydown');
+            e.which = keyboard.delete; // make it a white square
+          } else {
+            xw.fill[current.row] = xw.fill[current.row].slice(0, current.col) + BLACK + xw.fill[current.row].slice(current.col + 1);
+            if (isSymmetrical) {
+              xw.fill[symRow] = xw.fill[symRow].slice(0, symCol) + BLACK + xw.fill[symRow].slice(symCol + 1);
+              symMutated = true;
+            }
+          }
+          isMutated = true;
+      }
+      if (e.which == keyboard.enter) {
+        changeDirection();
+          // current.direction = (current.direction == ACROSS) ? DOWN : ACROSS;
+      }
+      if (e.which == keyboard.delete) {
+        e.preventDefault();
+        // let oldContent = xw.fill[current.row][current.col];
+        xw.fill[current.row] = xw.fill[current.row].slice(0, current.col) + BLANK + xw.fill[current.row].slice(current.col + 1);
+          if (oldContent == BLACK) {
+            if (isSymmetrical) {
+              xw.fill[symRow] = xw.fill[symRow].slice(0, symCol) + BLANK + xw.fill[symRow].slice(symCol + 1);
+              symMutated = true;
+            }
+          } else { // move the cursor
+            e = new Event('keydown');
+            if (current.direction == ACROSS) {
+              e.which = keyboard.left;
+            } else {
+              e.which = keyboard.up;
+            }
+          }
+          isMutated = true;
+      }
+      // save to history before cursor is moved
+      if (!isFakeEvent && isMutated) {
+        
+        // build object
+        let histObj = {
+          row: current.row,
+          col: current.col,
+          before: oldContent,
+          after: xw.fill[current.row][current.col],
+          
+          // symmetrical partner (if needed)
+          sym: (isSymmetrical && symMutated) ? {
+            row: symRow,
+            col: symCol,
+            before: oldSymContent,
+            after: xw.fill[symRow][symCol]
+          } : null
+        }
+
+        // save changes
+        history.steps.push(histObj);
+
+        // update index
+        history.pos = history.steps.length - 1;
+      }
+      if (e.which >= keyboard.left && e.which <= keyboard.down) {
+          e.preventDefault();
+         
+          // let content = xw.fill[current.row][current.col];
+          let isNextBlack;
+          switch (e.which) {
+            case keyboard.left:
+              // if (current.direction == ACROSS || content == BLACK) {
+                isNextBlack = xw.fill[current.row][current.col - 1] == BLACK;
+                if (!isFakeEvent || (isFakeEvent && !isNextBlack)) current.col -= (current.col == 0) ? 0 : 1;
+              // }
+              changeDirection(ACROSS) ;
+              break;
+            case keyboard.up:
+              // if (current.direction == DOWN || content == BLACK) {
+                isNextBlack = xw.fill[current.row - 1][current.col] == BLACK;
+                if (!isFakeEvent || (isFakeEvent && !isNextBlack)) current.row -= (current.row == 0) ? 0 : 1;
+              // }
+              changeDirection(DOWN) ;
+              break;
+            case keyboard.right:
+              // if (current.direction == ACROSS || content == BLACK) {
+                isNextBlack = xw.fill[current.row][current.col + 1] == BLACK;
+                if (!isFakeEvent || (isFakeEvent && !isNextBlack)) current.col += (current.col == xw.cols - 1) ? 0 : 1;
+              // }
+              changeDirection(ACROSS) ;
+              break;
+            case keyboard.down:
+              // if (current.direction == DOWN || content == BLACK) {
+                isNextBlack = xw.fill[current.row + 1][current.col] == BLACK;
+                if (!isFakeEvent || (isFakeEvent && !isNextBlack)) current.row += (current.row == xw.rows - 1) ? 0 : 1;
+              // }
+              changeDirection(DOWN) ;
+              break;
+          }
+          
+      }
+      
     }
-    
+    // console.log("[" + current.row + "," + current.col + "]");
+
+    // reactivate new current cell
+    activeCell = grid.querySelector('[data-row="' + current.row + '"]').querySelector('[data-col="' + current.col + '"]');
+    activeCell.classList.add("active");
+
+    // update
+    updateUI();
   }
-  if (e.which == keyboard.black) {
-      if (xw.fill[current.row][current.col] == BLACK) { // if already black...
-        e = new Event('keydown');
-        e.which = keyboard.delete; // make it a white square
-      } else {
-        xw.fill[current.row] = xw.fill[current.row].slice(0, current.col) + BLACK + xw.fill[current.row].slice(current.col + 1);
-        if (isSymmetrical) {
-          xw.fill[symRow] = xw.fill[symRow].slice(0, symCol) + BLACK + xw.fill[symRow].slice(symCol + 1);
-        }
-      }
-      isMutated = true;
-  }
-  if (e.which == keyboard.enter) {
-    changeDirection();
-      // current.direction = (current.direction == ACROSS) ? DOWN : ACROSS;
-  }
-  if (e.which == keyboard.delete) {
-    e.preventDefault();
-    let oldContent = xw.fill[current.row][current.col];
-    xw.fill[current.row] = xw.fill[current.row].slice(0, current.col) + BLANK + xw.fill[current.row].slice(current.col + 1);
-      if (oldContent == BLACK) {
-        if (isSymmetrical) {
-          xw.fill[symRow] = xw.fill[symRow].slice(0, symCol) + BLANK + xw.fill[symRow].slice(symCol + 1);
-        }
-      } else { // move the cursor
-        e = new Event('keydown');
-        if (current.direction == ACROSS) {
-          e.which = keyboard.left;
-        } else {
-          e.which = keyboard.up;
-        }
-      }
-      isMutated = true;
-  }
-  if (e.which >= keyboard.left && e.which <= keyboard.down) {
-      e.preventDefault();
-      const previousCell = grid.querySelector('[data-row="' + current.row + '"]').querySelector('[data-col="' + current.col + '"]');
-      previousCell.classList.remove("active");
-      // let content = xw.fill[current.row][current.col];
-      let isNextBlack;
-      let isFakeEvent = e.key == undefined;
-      switch (e.which) {
-        case keyboard.left:
-          // if (current.direction == ACROSS || content == BLACK) {
-            isNextBlack = xw.fill[current.row][current.col - 1] == BLACK;
-            if (!isFakeEvent || (isFakeEvent && !isNextBlack)) current.col -= (current.col == 0) ? 0 : 1;
-          // }
-          changeDirection(ACROSS) ;
-          break;
-        case keyboard.up:
-          // if (current.direction == DOWN || content == BLACK) {
-            isNextBlack = xw.fill[current.row - 1][current.col] == BLACK;
-            if (!isFakeEvent || (isFakeEvent && !isNextBlack)) current.row -= (current.row == 0) ? 0 : 1;
-          // }
-          changeDirection(DOWN) ;
-          break;
-        case keyboard.right:
-          // if (current.direction == ACROSS || content == BLACK) {
-            isNextBlack = xw.fill[current.row][current.col + 1] == BLACK;
-            if (!isFakeEvent || (isFakeEvent && !isNextBlack)) current.col += (current.col == xw.cols - 1) ? 0 : 1;
-          // }
-          changeDirection(ACROSS) ;
-          break;
-        case keyboard.down:
-          // if (current.direction == DOWN || content == BLACK) {
-            isNextBlack = xw.fill[current.row + 1][current.col] == BLACK;
-            if (!isFakeEvent || (isFakeEvent && !isNextBlack)) current.row += (current.row == xw.rows - 1) ? 0 : 1;
-          // }
-          changeDirection(DOWN) ;
-          break;
-      }
-      // console.log("[" + current.row + "," + current.col + "]");
-      activeCell = grid.querySelector('[data-row="' + current.row + '"]').querySelector('[data-col="' + current.col + '"]');
-      activeCell.classList.add("active");
-  }
-  updateUI();
 }
 
 function updateUI() {
