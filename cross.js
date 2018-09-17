@@ -390,23 +390,31 @@ function keyboardHandler(e) {
       
       // call from history
       if (e.which == keyboard.z || e.which == keyboard.y) {
-        if (e.which == keyboard.z) {
-          // undo
-          let lastStep = history.steps[history.pos];
-          
+
+        // flag
+        var isUndo = e.which == keyboard.z;
+        var hlen = history.steps.len;
+        var hpos = isUndo ? history.pos: history.pos + 1;
+
+        // get step
+        let step = history.steps[hpos];
+        if (step) {
+
           // undo last square
-          xw.fill[lastStep.row] = xw.fill[lastStep.row].slice(0, lastStep.col) + lastStep.before + xw.fill[lastStep.row].slice(lastStep.col + 1);
-          current.row = lastStep.row;
-          current.col = lastStep.col;
+          var newValue = isUndo ? "before" : "after";
+          xw.fill[step.row] = xw.fill[step.row].slice(0, step.col) + step[newValue] + xw.fill[step.row].slice(step.col + 1);
+          current.row = step.row;
+          current.col = step.col;
 
           // if symmetrical was provided
-          if (lastStep.sym) {
+          if (step.sym) {
 
             // undo symmetrical square to match
-            xw.fill[lastStep.sym.row] = xw.fill[lastStep.sym.row].slice(0, lastStep.sym.col) + lastStep.sym.before + xw.fill[lastStep.sym.row].slice(lastStep.sym.col + 1);          
+            xw.fill[step.sym.row] = xw.fill[step.sym.row].slice(0, step.sym.col) + step.sym[newValue] + xw.fill[step.sym.row].slice(step.sym.col + 1);          
           }
-        // } else if (e.which == keyboard.y){
-          // redo
+
+          // update index
+          history.pos = isUndo ? hpos - 1 : hpos;
         }
       }
 
@@ -490,6 +498,7 @@ function keyboardHandler(e) {
         }
 
         // save changes
+        history.steps.splice(history.pos + 1);
         history.steps.push(histObj);
 
         // update index
