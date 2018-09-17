@@ -1,26 +1,34 @@
-# Phil, a crossword maker
+# Kevin, a cryptic crossword maker
 
 <img src="images/screenshot.png" align="right" width="400" height="380">
 
-Phil helps you make crosswords, using client-side JavaScript.
+Kevin, son of Phil, helps you make crosswords using client-side JavaScript.
 * Import & export .xw ([JSON](https://www.xwordinfo.com/JSON/)) or .puz files.
 * Use the built-in dictionary, or any text file you want.
 * Print to PDF.
 * Create a New York Times submission in seconds.
+* (NEW!) Now supporting non-NYT formatted grids
+* (NEW!) Undo & Redo
+
+Kevin is a forked offshoot of the original NYT-specific crossword maker, called Phil, minimally altered to support other formats of crossword layout. 
+
+Chek out the original, Phil - created by Kieran King, [here](http://www.keiranking.com/blog/2017/phil/). 
 
 ## Related repositories
 
-Phil uses [Font Awesome](https://github.com/FortAwesome/Font-Awesome/) icons and [jsPDF](https://github.com/MrRio/jsPDF/) (along with [jsPDF-AutoTable](https://github.com/simonbengtsson/jsPDF-AutoTable/)) for generating PDFs.
+Kevin uses [Font Awesome](https://github.com/FortAwesome/Font-Awesome/) icons and [jsPDF](https://github.com/MrRio/jsPDF/) (along with [jsPDF-AutoTable](https://github.com/simonbengtsson/jsPDF-AutoTable/)) for generating PDFs.
 
-The Phil solving engine (in progress) uses the [Glucose](http://www.labri.fr/perso/lsimon/glucose/) 3.0 SAT solver. The sources (with our modifications) are in the [third_party](third_party) directory.
+The Kevin solving engine (in progress) uses the [Glucose](http://www.labri.fr/perso/lsimon/glucose/) 3.0 SAT solver. The sources (with previous modifications) are in the [third_party](third_party) directory.
+
+(original instructions by Kieran King)
 
 ## Getting started
 
-To use Phil:
+To use Kevin:
 
-1. Go to [keiranking.com/phil](http://www.keiranking.com/phil).
+1. Go to [https://dnapoleoni.github.io/Kevin/](https://dnapoleoni.github.io/Kevin/).
 
-To run your own copy of Phil:
+To run your own copy of Kevin:
 
 1. Install a working [Emscripten](http://kripken.github.io/emscripten-site/) environment. On Mac, using [homebrew](http://braumeister.org/formula/emscripten) is a good choice.
 
@@ -33,7 +41,7 @@ To run your own copy of Phil:
 
    At this point, `xwsolve.js` and `xwsolve.wasm` should be generated.
 
-3. Go back to the Phil main directory (`cd ../../..`) and create symbolic links (aliases):
+3. Go back to the Kevin main directory (`cd ../../..`) and create symbolic links (aliases):
 
    ```
    ln -s third_party/glucose-3.0/simp/xwsolve.* .
@@ -66,4 +74,4 @@ Unless required by law or agreed in writing, software distributed under the Lice
 is distributed on an **'as is' basis, without warranties or conditions**, express or implied.
 See the [License](LICENSE.txt) for the specific language governing permissions and limitations.
 
-&copy; Keiran King
+&copy; Daniel Napoleoni, based on a repo by Kieran King 
