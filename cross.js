@@ -39,7 +39,7 @@ const DEFAULT_AUTHOR = "Anonymous";
 const DEFAULT_CLUE = "(blank clue)";
 const DEFAULT_NOTIFICATION_LIFETIME = 10; // in seconds
 
-let history;
+let history = { pos: null, steps: [] };
 let isSymmetrical = true;
 let grid = undefined;
 let squares = undefined;
@@ -297,7 +297,7 @@ function createNewPuzzle(rows, cols) {
   createGrid(xw.rows, xw.cols);
 
   isSymmetrical = true;
-  history =  {pos: null, steps: [] };
+
   current = {
     "row":        0,
     "col":        0,
@@ -310,6 +310,7 @@ function createNewPuzzle(rows, cols) {
     "direction":  ACROSS
   };
 
+  history = { pos: null, steps: [] };
   grid = document.getElementById("grid");
   squares = grid.querySelectorAll('td');
 
