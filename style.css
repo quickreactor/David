@@ -12,6 +12,7 @@
   --dk-blue-mono: #656565;
   --green: #00ff00;
   --red: #ff3333;
+  --warning: #ffeecc;
 }
 
 body {
@@ -121,6 +122,10 @@ h1 {
 #grid td.pencil .fill {
   /*opacity: 0.3;*/
   color: var(--med-grey);
+}
+
+#grid td.warning {
+  background-color: var(--warning);
 }
 
 #grid td.black {

@@ -41,6 +41,7 @@ const DEFAULT_NOTIFICATION_LIFETIME = 10; // in seconds
 
 let history = { pos: null, steps: [] };
 let isSymmetrical = true;
+let useWarning = true;
 let grid = undefined;
 let squares = undefined;
 let isMutated = false;
@@ -241,6 +242,7 @@ class Interface {
     this.toolbar = new Toolbar("toolbar");
 
     this.isSymmetrical = true;
+    this.useWarning = true;
     this.row = 0;
     this.col = 0;
     this.acrossWord = '';
@@ -582,14 +584,37 @@ function updateUI() {
 }
 
 function updateGridUI() {
+  console.log('updateGridUI()');
   for (let i = 0; i < xw.rows; i++) {
     for (let j = 0; j < xw.cols; j++) {
+      //console.log('i,j', i, j);
       const activeCell = grid.querySelector('[data-row="' + i + '"]').querySelector('[data-col="' + j + '"]');
       let fill = xw.fill[i][j];
+      // remove warning color
+      if (!useWarning) activeCell.classList.remove("warning");
+
+      if (fill != BLANK) {
+        activeCell.classList.remove("warning");
+      }
       if (fill == BLANK && forced != null) {
         fill = forced[i][j];
         activeCell.classList.add("pencil");
-      } else {
+      } else if (fill != BLANK && fill != BLACK) {
+        activeCell.classList.remove("warning");
+        activeCell.classList.remove("pencil");
+        if (useWarning) {
+          // if this is a letter, highlight corresponding
+          // reflected cell (if that cell is blank)
+          let reflected_i = xw.rows - i - 1;
+          let reflected_j = xw.cols - j - 1;
+          let reflectedFill = xw.fill[reflected_i][reflected_j];
+          if (reflectedFill == BLANK) {
+            const reflectedCell = grid.querySelector('[data-row="' + reflected_i + '"]').querySelector('[data-col="' + reflected_j + '"]');
+            reflectedCell.classList.add("warning");
+          }
+        }
+      }
+      else {
         activeCell.classList.remove("pencil");
       }
       activeCell.lastChild.innerHTML = fill;
@@ -921,6 +946,16 @@ function toggleSymmetry() {
   buttonState = symButton.getAttribute("data-state");
   symButton.setAttribute("data-state", (buttonState == "on") ? "off" : "on");
   symButton.setAttribute("data-tooltip", "Turn " + buttonState + " symmetry");
+}
+function toggleWarning() {
+  useWarning = !useWarning;
+  //update UI button
+  let warningButton = document.getElementById("toggle-warning");
+  warningButton.classList.toggle("button-on");
+  buttonState = warningButton.getAttribute("data-state");
+  warningButton.setAttribute("data-state", (buttonState == "on") ? "off" : "on");
+  warningButton.setAttribute("data-tooltip", "Turn " + buttonState + " warning fill");
+  updateGridUI();
 }
 
 // function toggleHelp() {
