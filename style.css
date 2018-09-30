@@ -251,6 +251,12 @@ kbd {
   font-weight: 500;
   color: var(--black);
 }
+#puzzle-clue-count, #puzzle-black-count {
+  display: inline-block;
+  font-size: 12px;
+  margin-left: 10px;
+}
+
 
 #sidebar {
   width: 260px;

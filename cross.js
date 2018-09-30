@@ -14,18 +14,18 @@
 // ------------------------------------------------------------------------
 
 const keyboard = {
-  "a":      65, "b": 66, "c": 67, "d": 68, "e": 69, "f": 70, "g": 71, "h": 72,
-  "i":      73, "j": 74, "k": 75, "l": 76, "m": 77, "n": 78, "o": 79, "p": 80,
-  "q":      81, "r": 82, "s": 83, "t": 84, "u": 85, "v": 86, "w": 87, "x": 88, "y": 89,
-  "z":      90,
-  "black":  190, ".": 190,
+  "a": 65, "b": 66, "c": 67, "d": 68, "e": 69, "f": 70, "g": 71, "h": 72,
+  "i": 73, "j": 74, "k": 75, "l": 76, "m": 77, "n": 78, "o": 79, "p": 80,
+  "q": 81, "r": 82, "s": 83, "t": 84, "u": 85, "v": 86, "w": 87, "x": 88, "y": 89,
+  "z": 90,
+  "black": 190, ".": 190,
   "delete": 8,
-  "enter":  13,
-  "space":  32,
-  "left":   37,
-  "up":     38,
-  "right":  39,
-  "down":   40,
+  "enter": 13,
+  "space": 32,
+  "left": 37,
+  "up": 38,
+  "right": 39,
+  "down": 40,
   // "ctrl":   17
 };
 const BLACK = ".";
@@ -39,7 +39,7 @@ const DEFAULT_AUTHOR = "Anonymous";
 const DEFAULT_CLUE = "(blank clue)";
 const DEFAULT_NOTIFICATION_LIFETIME = 10; // in seconds
 
-let history = {pos: null, steps: []};
+let history = { pos: null, steps: [] };
 let isSymmetrical = true;
 let grid = undefined;
 let squares = undefined;
@@ -81,28 +81,28 @@ class Grid {
     document.getElementById("main").appendChild(table);
 
     for (let i = 0; i < rows; i++) {
-        let row = document.createElement("TR");
-        row.setAttribute("data-row", i);
-        document.getElementById("grid").appendChild(row);
+      let row = document.createElement("TR");
+      row.setAttribute("data-row", i);
+      document.getElementById("grid").appendChild(row);
 
       for (let j = 0; j < cols; j++) {
-          let col = document.createElement("TD");
-          col.setAttribute("data-col", j);
+        let col = document.createElement("TD");
+        col.setAttribute("data-col", j);
 
-          let label = document.createElement("DIV");
-          label.setAttribute("class", "label");
-          let labelContent = document.createTextNode("");
+        let label = document.createElement("DIV");
+        label.setAttribute("class", "label");
+        let labelContent = document.createTextNode("");
 
-          let fill = document.createElement("DIV");
-          fill.setAttribute("class", "fill");
-          let fillContent = document.createTextNode(xw.fill[i][j]);
+        let fill = document.createElement("DIV");
+        fill.setAttribute("class", "fill");
+        let fillContent = document.createTextNode(xw.fill[i][j]);
 
-          label.appendChild(labelContent);
-          fill.appendChild(fillContent);
-          col.appendChild(label);
-          col.appendChild(fill);
-          row.appendChild(col);
-        }
+        label.appendChild(labelContent);
+        fill.appendChild(fillContent);
+        col.appendChild(label);
+        col.appendChild(fill);
+        row.appendChild(col);
+      }
     }
     grid = document.getElementById("grid");
     squares = grid.querySelectorAll('td');
@@ -207,7 +207,7 @@ class Toolbar {
 class Notification {
   constructor(message, lifetime = undefined) {
     this.message = message;
-    this.id = String(randomNumber(1,10000));
+    this.id = String(randomNumber(1, 10000));
     this.post();
     if (lifetime) {
       this.dismiss(lifetime);
@@ -230,7 +230,7 @@ class Notification {
   dismiss(seconds = 0) {
     let div = document.getElementById(this.id);
     // seconds = (seconds === true) ? 10 : seconds;
-    setTimeout(function() { div.remove(); }, seconds * 1000);
+    setTimeout(function () { div.remove(); }, seconds * 1000);
   }
 }
 
@@ -298,15 +298,15 @@ function createNewPuzzle(rows, cols) {
 
   isSymmetrical = true;
   current = {
-    "row":        0,
-    "col":        0,
+    "row": 0,
+    "col": 0,
     "acrossWord": '',
-    "downWord":   '',
-    "acrossStartIndex":0,
-    "acrossEndIndex":  DEFAULT_SIZE,
-    "downStartIndex":  0,
-    "downEndIndex":    DEFAULT_SIZE,
-    "direction":  ACROSS
+    "downWord": '',
+    "acrossStartIndex": 0,
+    "acrossEndIndex": DEFAULT_SIZE,
+    "downStartIndex": 0,
+    "downEndIndex": DEFAULT_SIZE,
+    "direction": ACROSS
   };
 
   grid = document.getElementById("grid");
@@ -325,7 +325,7 @@ function createNewPuzzle(rows, cols) {
 }
 
 function changeDirection(d) {
-  let toDir = null; 
+  let toDir = null;
   // console.log('togg')
   if (d == null || d == undefined) {
     toDir = (current.direction == ACROSS) ? DOWN : ACROSS;
@@ -364,7 +364,7 @@ function mouseHandler(e) {
 function keyboardHandler(e) {
 
   let approvedInputs = Object.entries(keyboard);
-  let isApprovedInput = approvedInputs.filter(item => { return item[1] == e.which}).length > 0;
+  let isApprovedInput = approvedInputs.filter(item => { return item[1] == e.which }).length > 0;
 
   // only run if key is in the supported keyboard list
   if (isApprovedInput) {
@@ -383,17 +383,17 @@ function keyboardHandler(e) {
     let activeCell = grid.querySelector('[data-row="' + current.row + '"]').querySelector('[data-col="' + current.col + '"]');
     const previousCell = grid.querySelector('[data-row="' + current.row + '"]').querySelector('[data-col="' + current.col + '"]');
     previousCell.classList.remove("active");
-  
+
     // if control is held, check for undo/redo
     if (e.ctrlKey) {
-      
+
       // call from history
       if (e.which == keyboard.z || e.which == keyboard.y) {
 
         // flag
         var isUndo = e.which == keyboard.z;
         var hlen = history.steps.len;
-        var hpos = isUndo ? history.pos: history.pos + 1;
+        var hpos = isUndo ? history.pos : history.pos + 1;
 
         // get step
         let step = history.steps[hpos];
@@ -409,7 +409,7 @@ function keyboardHandler(e) {
           if (step.sym) {
 
             // undo symmetrical square to match
-            xw.fill[step.sym.row] = xw.fill[step.sym.row].slice(0, step.sym.col) + step.sym[newValue] + xw.fill[step.sym.row].slice(step.sym.col + 1);          
+            xw.fill[step.sym.row] = xw.fill[step.sym.row].slice(0, step.sym.col) + step.sym[newValue] + xw.fill[step.sym.row].slice(step.sym.col + 1);
           }
 
           // update index
@@ -422,7 +422,7 @@ function keyboardHandler(e) {
       // normal keypresses
       if ((e.which >= keyboard.a && e.which <= keyboard.z) || e.which == keyboard.space) {
         if (oldContent != BLACK) {
-        
+
           // this line changes letters
           xw.fill[current.row] = xw.fill[current.row].slice(0, current.col) + String.fromCharCode(e.which) + xw.fill[current.row].slice(current.col + 1);
           /*if (oldContent == BLACK) {
@@ -439,43 +439,43 @@ function keyboardHandler(e) {
           }
           isMutated = true;
         }
-        
+
       }
       if (e.which == keyboard.black) {
-          if (xw.fill[current.row][current.col] == BLACK) { // if already black...
-            e = new Event('keydown');
-            e.which = keyboard.delete; // make it a white square
-          } else {
-            xw.fill[current.row] = xw.fill[current.row].slice(0, current.col) + BLACK + xw.fill[current.row].slice(current.col + 1);
-            if (isSymmetrical) {
-              xw.fill[symRow] = xw.fill[symRow].slice(0, symCol) + BLACK + xw.fill[symRow].slice(symCol + 1);
-              symMutated = true;
-            }
+        if (xw.fill[current.row][current.col] == BLACK) { // if already black...
+          e = new Event('keydown');
+          e.which = keyboard.delete; // make it a white square
+        } else {
+          xw.fill[current.row] = xw.fill[current.row].slice(0, current.col) + BLACK + xw.fill[current.row].slice(current.col + 1);
+          if (isSymmetrical) {
+            xw.fill[symRow] = xw.fill[symRow].slice(0, symCol) + BLACK + xw.fill[symRow].slice(symCol + 1);
+            symMutated = true;
           }
-          isMutated = true;
+        }
+        isMutated = true;
       }
       if (e.which == keyboard.enter) {
         changeDirection();
-          // current.direction = (current.direction == ACROSS) ? DOWN : ACROSS;
+        // current.direction = (current.direction == ACROSS) ? DOWN : ACROSS;
       }
       if (e.which == keyboard.delete) {
         e.preventDefault();
         // let oldContent = xw.fill[current.row][current.col];
         xw.fill[current.row] = xw.fill[current.row].slice(0, current.col) + BLANK + xw.fill[current.row].slice(current.col + 1);
-          if (oldContent == BLACK) {
-            if (isSymmetrical) {
-              xw.fill[symRow] = xw.fill[symRow].slice(0, symCol) + BLANK + xw.fill[symRow].slice(symCol + 1);
-              symMutated = true;
-            }
-          } else { // move the cursor
-            e = new Event('keydown');
-            if (current.direction == ACROSS) {
-              e.which = keyboard.left;
-            } else {
-              e.which = keyboard.up;
-            }
+        if (oldContent == BLACK) {
+          if (isSymmetrical) {
+            xw.fill[symRow] = xw.fill[symRow].slice(0, symCol) + BLANK + xw.fill[symRow].slice(symCol + 1);
+            symMutated = true;
           }
-          isMutated = true;
+        } else { // move the cursor
+          e = new Event('keydown');
+          if (current.direction == ACROSS) {
+            e.which = keyboard.left;
+          } else {
+            e.which = keyboard.up;
+          }
+        }
+        isMutated = true;
       }
 
       // check if event is original keypress or fake keydown dispatched event
@@ -484,14 +484,14 @@ function keyboardHandler(e) {
 
       // save to history before cursor is moved
       if (!isFakeEvent && isMutated) {
-        
+
         // build object
         let histObj = {
           row: current.row,
           col: current.col,
           before: oldContent,
           after: xw.fill[current.row][current.col],
-          
+
           // symmetrical partner (if needed)
           sym: (isSymmetrical && symMutated) ? {
             row: symRow,
@@ -509,43 +509,43 @@ function keyboardHandler(e) {
         history.pos = history.steps.length - 1;
       }
       if (e.which >= keyboard.left && e.which <= keyboard.down) {
-          e.preventDefault();
-         
-          // let content = xw.fill[current.row][current.col];
-          let isNextBlack;
-          switch (e.which) {
-            case keyboard.left:
-              // if (current.direction == ACROSS || content == BLACK) {
-                isNextBlack = xw.fill[current.row][current.col - 1] == BLACK;
-                if (!isFakeEvent || (isFakeEvent && !isNextBlack)) current.col -= (current.col == 0) ? 0 : 1;
-              // }
-              changeDirection(ACROSS) ;
-              break;
-            case keyboard.up:
-              // if (current.direction == DOWN || content == BLACK) {
-                isNextBlack = xw.fill[current.row - 1][current.col] == BLACK;
-                if (!isFakeEvent || (isFakeEvent && !isNextBlack)) current.row -= (current.row == 0) ? 0 : 1;
-              // }
-              changeDirection(DOWN) ;
-              break;
-            case keyboard.right:
-              // if (current.direction == ACROSS || content == BLACK) {
-                isNextBlack = xw.fill[current.row][current.col + 1]
-                if (!isFakeEvent || (isFakeEvent && isNextBlack != BLACK)) current.col += (current.col == xw.cols - 1) ? 0 : 1;
-              // }
-              changeDirection(ACROSS) ;
-              break;
-            case keyboard.down:
-              // if (current.direction == DOWN || content == BLACK) {
-                isNextBlack = xw.fill[current.row + 1][current.col] == BLACK;
-                if (!isFakeEvent || (isFakeEvent && !isNextBlack)) current.row += (current.row == xw.rows - 1) ? 0 : 1;
-              // }
-              changeDirection(DOWN) ;
-              break;
-          }
-          
+        e.preventDefault();
+
+        // let content = xw.fill[current.row][current.col];
+        let isNextBlack;
+        switch (e.which) {
+          case keyboard.left:
+            // if (current.direction == ACROSS || content == BLACK) {
+            isNextBlack = xw.fill[current.row][current.col - 1] == BLACK;
+            if (!isFakeEvent || (isFakeEvent && !isNextBlack)) current.col -= (current.col == 0) ? 0 : 1;
+            // }
+            changeDirection(ACROSS);
+            break;
+          case keyboard.up:
+            // if (current.direction == DOWN || content == BLACK) {
+            isNextBlack = xw.fill[current.row - 1][current.col] == BLACK;
+            if (!isFakeEvent || (isFakeEvent && !isNextBlack)) current.row -= (current.row == 0) ? 0 : 1;
+            // }
+            changeDirection(DOWN);
+            break;
+          case keyboard.right:
+            // if (current.direction == ACROSS || content == BLACK) {
+            isNextBlack = xw.fill[current.row][current.col + 1]
+            if (!isFakeEvent || (isFakeEvent && isNextBlack != BLACK)) current.col += (current.col == xw.cols - 1) ? 0 : 1;
+            // }
+            changeDirection(ACROSS);
+            break;
+          case keyboard.down:
+            // if (current.direction == DOWN || content == BLACK) {
+            isNextBlack = xw.fill[current.row + 1][current.col] == BLACK;
+            if (!isFakeEvent || (isFakeEvent && !isNextBlack)) current.row += (current.row == xw.rows - 1) ? 0 : 1;
+            // }
+            changeDirection(DOWN);
+            break;
+        }
+
       }
-      
+
     }
     // console.log("[" + current.row + "," + current.col + "]");
 
@@ -644,8 +644,22 @@ function updateCluesUI() {
 }
 
 function updateInfoUI() {
+
   document.getElementById("puzzle-title").innerHTML = xw.title;
   document.getElementById("puzzle-author").innerHTML = xw.author;
+
+  // some stats: 
+  //    number of clues
+  document.getElementById("puzzle-clue-count").innerHTML = 'clues: ' + Object.keys(xw.clues).length;
+
+  //    count and pct of black squares
+  var blackCount = 0;
+  for (var i = 0; i < xw.fill.length; i++) {
+    blackCount += (xw.fill[i].match(/\./g) || []).length
+  }
+  var blackPct = Math.round((blackCount * 100) / (xw.rows * xw.cols));
+  document.getElementById("puzzle-black-count").innerHTML = 'black: ' + blackCount + ' (' + blackPct + '%)';
+
 }
 
 function createGrid(rows, cols) {
@@ -655,30 +669,30 @@ function createGrid(rows, cols) {
   // table.setAttribute("tabindex", "0");
   document.getElementById("main").appendChild(table);
 
-	for (let i = 0; i < rows; i++) {
-    	let row = document.createElement("TR");
-    	row.setAttribute("data-row", i);
-    	document.getElementById("grid").appendChild(row);
+  for (let i = 0; i < rows; i++) {
+    let row = document.createElement("TR");
+    row.setAttribute("data-row", i);
+    document.getElementById("grid").appendChild(row);
 
-		for (let j = 0; j < cols; j++) {
-		    let col = document.createElement("TD");
-        col.setAttribute("data-col", j);
+    for (let j = 0; j < cols; j++) {
+      let col = document.createElement("TD");
+      col.setAttribute("data-col", j);
 
-        let label = document.createElement("DIV");
-        label.setAttribute("class", "label");
-        let labelContent = document.createTextNode("");
+      let label = document.createElement("DIV");
+      label.setAttribute("class", "label");
+      let labelContent = document.createTextNode("");
 
-        let fill = document.createElement("DIV");
-        fill.setAttribute("class", "fill");
-        let fillContent = document.createTextNode(xw.fill[i][j]);
+      let fill = document.createElement("DIV");
+      fill.setAttribute("class", "fill");
+      let fillContent = document.createTextNode(xw.fill[i][j]);
 
-    		// let t = document.createTextNode("[" + i + "," + j + "]");
-        label.appendChild(labelContent);
-        fill.appendChild(fillContent);
-        col.appendChild(label);
-        col.appendChild(fill);
-        row.appendChild(col);
-      }
+      // let t = document.createTextNode("[" + i + "," + j + "]");
+      label.appendChild(labelContent);
+      fill.appendChild(fillContent);
+      col.appendChild(label);
+      col.appendChild(fill);
+      row.appendChild(col);
+    }
   }
   updateLabelsAndClues();
 }
@@ -750,7 +764,7 @@ function updateActiveWords() {
   } else {
     current.downWord = getWordAt(current.row, current.col, DOWN, true);
   }
-  
+
   /*if (xw.fill[current.row][current.col] == BLACK) {
     current.acrossWord = '';
     current.downWord = '';
@@ -952,7 +966,7 @@ function runSolvePending() {
   let puz = xw.fill.join('\n') + '\n';
   solveWorker.postMessage(['run', solveWordlist, puz, isQuick]);
   solveWorkerState = 'running';
-  solveWorker.onmessage = function(e) {
+  solveWorker.onmessage = function (e) {
     switch (e.data[0]) {
       case 'sat':
         if (solveWorkerState == 'running') {
