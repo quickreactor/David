@@ -585,41 +585,55 @@ function updateUI() {
 }
 
 function updateGridUI() {
+  let reflectedCells = [];
   // console.log('updateGridUI()');
   for (let i = 0; i < xw.rows; i++) {
     for (let j = 0; j < xw.cols; j++) {
-      //console.log('i,j', i, j);
+
       const activeCell = grid.querySelector('[data-row="' + i + '"]').querySelector('[data-col="' + j + '"]');
       let fill = xw.fill[i][j];
 
-      // remove warning color
-      if (!useWarning) activeCell.classList.remove("warning");
-
-      if (fill != BLANK) {
-        activeCell.classList.remove("warning");
-      }
+      // pencil in force-written letters
       if (fill == BLANK && forced != null) {
         fill = forced[i][j];
         activeCell.classList.add("pencil");
-      } else if (fill != BLANK && fill != BLACK) {
-        activeCell.classList.remove("warning");
+      } else {
         activeCell.classList.remove("pencil");
-        if (useWarning) {
-          // if this is a letter, highlight corresponding
-          // reflected cell (if that cell is blank)
-          let reflected_i = xw.rows - i - 1;
-          let reflected_j = xw.cols - j - 1;
-          let reflectedFill = xw.fill[reflected_i][reflected_j];
-          if (reflectedFill == BLANK) {
+      }
+
+      if (useWarning) {
+
+        // check opposite of every cell
+        let reflected_i = xw.rows - i - 1;
+        let reflected_j = xw.cols - j - 1;
+        let reflectedFill = xw.fill[reflected_i][reflected_j];
+        let warnActive = fill == BLANK && (reflectedFill != BLANK && reflectedFill != BLACK);
+        let warnOpposite = reflectedFill == BLANK && (fill != BLANK && fill != BLACK); 
+
+        // only warn pairs
+        if (warnOpposite || warnActive){
+
+          // pair contains a warn
+          if (warnActive) {
+            activeCell.classList.add("warning");
+          }
+          if (warnOpposite) {
             const reflectedCell = grid.querySelector('[data-row="' + reflected_i + '"]').querySelector('[data-col="' + reflected_j + '"]');
             reflectedCell.classList.add("warning");
           }
+          
+        } else {
+          // neither are warned
+          activeCell.classList.remove("warning");
         }
-      }
-      else {
-        activeCell.classList.remove("pencil");
-      }
+      } else {
+        activeCell.classList.remove("warning");
+      }   
+
+      // set letters
       activeCell.lastChild.innerHTML = fill;
+      
+      // show/hide black squares
       if (fill == BLACK) {
         activeCell.classList.add("black");
       } else {
@@ -948,6 +962,11 @@ function toggleSymmetry() {
   buttonState = symButton.getAttribute("data-state");
   symButton.setAttribute("data-state", (buttonState == "on") ? "off" : "on");
   symButton.setAttribute("data-tooltip", "Turn " + buttonState + " symmetry");
+
+  // show/hide symmetry warning
+  let warningButton = document.getElementById("toggle-warning");
+  warningButton.style.display = buttonState == "on" ? "none" : "inline-block";
+
 }
 function toggleWarning() {
   useWarning = !useWarning;
@@ -956,7 +975,7 @@ function toggleWarning() {
   warningButton.classList.toggle("button-on");
   buttonState = warningButton.getAttribute("data-state");
   warningButton.setAttribute("data-state", (buttonState == "on") ? "off" : "on");
-  warningButton.setAttribute("data-tooltip", "Turn " + buttonState + " warning fill");
+  warningButton.setAttribute("data-tooltip", "Turn " + buttonState + " symmetry warning");
   updateGridUI();
 }
 
