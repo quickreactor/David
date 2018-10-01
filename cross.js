@@ -543,31 +543,31 @@ function keyboardHandler(e) {
         let isNextBlack;
         switch (e.which) {
           case keyboard.left:
-            // if (current.direction == ACROSS || content == BLACK) {
             isNextBlack = xw.fill[current.row][current.col - 1] == BLACK;
             if (!isFakeEvent || (isFakeEvent && !isNextBlack)) current.col -= (current.col == 0) ? 0 : 1;
-            // }
             changeDirection(ACROSS);
             break;
           case keyboard.up:
-            // if (current.direction == DOWN || content == BLACK) {
-            isNextBlack = xw.fill[current.row - 1][current.col] == BLACK;
-            if (!isFakeEvent || (isFakeEvent && !isNextBlack)) current.row -= (current.row == 0) ? 0 : 1;
-            // }
+            // check if on board first (rows > cols)
+            let prevRow = xw.fill[current.row - 1]; 
+            if (prevRow != undefined) {
+              isNextBlack = prevRow[current.col] == BLACK;
+              if (!isFakeEvent || (isFakeEvent && !isNextBlack)) current.row -= (current.row == 0) ? 0 : 1;
+            } 
             changeDirection(DOWN);
             break;
           case keyboard.right:
-            // if (current.direction == ACROSS || content == BLACK) {
             isNextBlack = xw.fill[current.row][current.col + 1]
             if (!isFakeEvent || (isFakeEvent && isNextBlack != BLACK)) current.col += (current.col == xw.cols - 1) ? 0 : 1;
-            // }
             changeDirection(ACROSS);
             break;
           case keyboard.down:
-            // if (current.direction == DOWN || content == BLACK) {
-            isNextBlack = xw.fill[current.row + 1][current.col] == BLACK;
-            if (!isFakeEvent || (isFakeEvent && !isNextBlack)) current.row += (current.row == xw.rows - 1) ? 0 : 1;
-            // }
+            // check if on board first (rows > cols)
+            let nextRow = xw.fill[current.row + 1]; 
+            if (nextRow != undefined) {
+              isNextBlack = nextRow[current.col] == BLACK;
+              if (!isFakeEvent || (isFakeEvent && !isNextBlack)) current.row += (current.row == xw.rows - 1) ? 0 : 1;
+            } 
             changeDirection(DOWN);
             break;
         }
