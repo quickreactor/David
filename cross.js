@@ -385,8 +385,8 @@ function keyboardHandler(e) {
     let oldSymContent = xw.fill[symRow][symCol];
 
     // get cells, deactivate old one every time
-    let activeCell = grid.querySelector('[data-row="' + current.row + '"]').querySelector('[data-col="' + current.col + '"]');
-    const previousCell = grid.querySelector('[data-row="' + current.row + '"]').querySelector('[data-col="' + current.col + '"]');
+    let activeCell = previousCell = grid.querySelector('[data-row="' + current.row + '"]').querySelector('[data-col="' + current.col + '"]');
+
     previousCell.classList.remove("active");
 
     // if control is held, check for undo/redo
@@ -424,122 +424,97 @@ function keyboardHandler(e) {
 
     } else {
 
-      // normal keypresses
-      if ((e.which >= keyboard.a && e.which <= keyboard.z) || e.which == keyboard.space) {
-        if (oldContent != BLACK) {
+      // what's already there
+      let wasBlack = oldContent == BLACK;
+      let wasBlank = oldContent == BLANK;
 
-          // this line changes letters
-          xw.fill[current.row] = xw.fill[current.row].slice(0, current.col) + String.fromCharCode(e.which) + xw.fill[current.row].slice(current.col + 1);
-          /*if (oldContent == BLACK) {
-            if (isSymmetrical) {
-              xw.fill[symRow] = xw.fill[symRow].slice(0, symCol) + BLANK + xw.fill[symRow].slice(symCol + 1);
-            }
-          }*/
-          // move the cursor
-          /*e = new Event('keydown');
-          if (current.direction == ACROSS) {
-            e.which = keyboard.right;
-          } else {
-            e.which = keyboard.down;
-          }*/
-          isMutated = true;
+      // what's been pressed
+      let isLetter = e.which >= keyboard.a && e.which <= keyboard.z;
+      let isDirection = e.which >= keyboard.left && e.which <= keyboard.down;
+      let isSpace = e.which == keyboard.space;
+      let isBlack = e.which == keyboard.black;
+      let isEnter = e.which == keyboard.enter;
+      let isBackspace = e.which == keyboard.delete;
 
-          // fake input
-          forceNextInput = current.direction == ACROSS ? keyboard.right : keyboard.down;
-        }
+      // new entry holder
+      let newFill = null;
+      
+      // stop default keypresses
+      if (isSpace || isEnter || isBackspace || isDirection) e.preventDefault();
 
-      }
-      if (e.which == keyboard.black) {
-        if (xw.fill[current.row][current.col] == BLACK) { // if already black...
-          // e = new Event('keydown');
-          // e.which = keyboard.delete; // make it a white square
-          // fake input
-          forceNextInput = keyboard.delete;
-        } else {
-          xw.fill[current.row] = xw.fill[current.row].slice(0, current.col) + BLACK + xw.fill[current.row].slice(current.col + 1);
-          if (isSymmetrical) {
-            xw.fill[symRow] = xw.fill[symRow].slice(0, symCol) + BLACK + xw.fill[symRow].slice(symCol + 1);
-            symMutated = true;
-          }
-        }
-        isMutated = true;
-      }
-      if (e.which == keyboard.enter) {
+      // do enter separate
+      if (isEnter) {
         changeDirection();
-        // current.direction = (current.direction == ACROSS) ? DOWN : ACROSS;
-      }
-      if (e.which == keyboard.delete) {
-        e.preventDefault();
-        // let oldContent = xw.fill[current.row][current.col];
-        xw.fill[current.row] = xw.fill[current.row].slice(0, current.col) + BLANK + xw.fill[current.row].slice(current.col + 1);
-        if (oldContent == BLACK) {
-          if (isSymmetrical) {
-            xw.fill[symRow] = xw.fill[symRow].slice(0, symCol) + BLANK + xw.fill[symRow].slice(symCol + 1);
-            symMutated = true;
+      } else {
+
+        // input string (letter or space)
+        if ((isLetter || isSpace) && !wasBlack) {
+
+          // get string
+          newFill = String.fromCharCode(e.which);
+          
+          // move cursor after
+          forceNextInput = current.direction == ACROSS ? keyboard.right : keyboard.down;
+        } 
+
+        // blacks
+        if (isBlack && !wasBlack) newFill = BLACK;
+        
+        // blanks
+        if (isBlack && wasBlack || isBackspace) newFill = BLANK;
+        
+        // move after backspace
+        if (isBackspace) forceNextInput = current.direction == ACROSS ? keyboard.left : keyboard.up;
+
+        // if need fill
+        if (newFill != null) {
+
+          // fill it
+          xw.fill[current.row] = xw.fill[current.row].slice(0, current.col) + newFill + xw.fill[current.row].slice(current.col + 1);
+
+          // save history object
+          let histObj = {
+            row: current.row,
+            col: current.col,
+            before: oldContent,
+            after: xw.fill[current.row][current.col]
           }
-        } else { // move the cursor
-          /*e = new Event('keydown');
-          if (current.direction == ACROSS) {
-            e.which = keyboard.left;
-          } else {
-            e.which = keyboard.up;
-          }*/
-          // fake input
-          forceNextInput = current.direction == ACROSS ? keyboard.left : keyboard.up;
+
+          // check for symmetry
+          if (isSymmetrical && (wasBlack && newFill == BLANK || wasBlank && newFill == BLACK)) {
+            
+            // fill partner
+            xw.fill[symRow] = xw.fill[symRow].slice(0, symCol) + newFill + xw.fill[symRow].slice(symCol + 1);
+            
+            // save sym history
+            histObj.sym = {
+              row: symRow,
+              col: symCol,
+              before: oldSymContent,
+              after: xw.fill[symRow][symCol]
+            }
+          }
+
+          // something's been updated, save it to history
+          history.steps.splice(history.pos + 1);
+          history.steps.push(histObj);
+          history.pos = history.steps.length - 1;
         }
-        isMutated = true;
       }
 
-      // check if event is original keypress or fake keydown dispatched event
-      const isFakeEvent = e.key == undefined;
-      console.log('is fake', isFakeEvent, e.which, e.key, e.key == undefined);
-
-      //
-      //
-      // save to history before cursor is moved
-      if (!isFakeEvent && isMutated) {
-
-        // build object
-        let histObj = {
-          row: current.row,
-          col: current.col,
-          before: oldContent,
-          after: xw.fill[current.row][current.col],
-
-          // symmetrical partner (if needed)
-          sym: (isSymmetrical && symMutated) ? {
-            row: symRow,
-            col: symCol,
-            before: oldSymContent,
-            after: xw.fill[symRow][symCol]
-          } : null
-        }
-
-        // save changes
-        history.steps.splice(history.pos + 1);
-        history.steps.push(histObj);
-
-        // update index
-        history.pos = history.steps.length - 1;
-      }
-
-      //
-      // after history step (moved here from inside flow)
-      //
-      // intervene with fake input first
-      //
+      // before directions, add in forced after-change direction inputs
       if (forceNextInput != null) {
         e = new Event('keydown');
         e.which = forceNextInput;
       }
 
-      //
-      // actual user direction input
-      //
-      if (e.which >= keyboard.left && e.which <= keyboard.down) {
-        e.preventDefault();
+      // now do directions
+      if (isDirection || forceNextInput != null) {
 
-        // let content = xw.fill[current.row][current.col];
+        // check if real or fake input
+        const isFakeEvent = e.key == undefined;
+
+         // let content = xw.fill[current.row][current.col];
         let isNextBlack;
         switch (e.which) {
           case keyboard.left:
@@ -571,12 +546,9 @@ function keyboardHandler(e) {
             changeDirection(DOWN);
             break;
         }
-
       }
-
     }
-    // console.log("[" + current.row + "," + current.col + "]");
-
+    
     // reactivate new current cell
     activeCell = grid.querySelector('[data-row="' + current.row + '"]').querySelector('[data-col="' + current.col + '"]');
     activeCell.classList.add("active");
@@ -616,6 +588,9 @@ function updateGridUI() {
       //console.log('i,j', i, j);
       const activeCell = grid.querySelector('[data-row="' + i + '"]').querySelector('[data-col="' + j + '"]');
       let fill = xw.fill[i][j];
+      if (fill != " ") {
+      // console.log(i, j, fill)
+      }
       // remove warning color
       if (!useWarning) activeCell.classList.remove("warning");
 
