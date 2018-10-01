@@ -13,6 +13,8 @@
   --green: #00ff00;
   --red: #ff3333;
   --warning: #ffeecc;
+  --dk-warning: #bce3ff;
+  --dk-warning-mono: #d5d5d5;
 }
 
 body {
@@ -126,6 +128,12 @@ h1 {
 
 #grid td.warning {
   background-color: var(--warning);
+}
+#grid td.warning.highlight {
+  background-color: var(--dk-warning-mono);
+}
+#grid:focus td.warning.highlight {
+  background-color: var(--dk-warning);
 }
 
 #grid td.black {
