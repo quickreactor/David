@@ -41,7 +41,7 @@ const DEFAULT_NOTIFICATION_LIFETIME = 10; // in seconds
 
 let history = { pos: null, steps: [] };
 let isSymmetrical = true;
-let useWarning = true;
+let useWarning = false;
 let grid = undefined;
 let squares = undefined;
 let isMutated = false;
@@ -966,6 +966,7 @@ function toggleSymmetry() {
   // show/hide symmetry warning
   let warningButton = document.getElementById("toggle-warning");
   warningButton.style.display = buttonState == "on" ? "none" : "inline-block";
+  if (buttonState == "on" && useWarning) toggleWarning();
 
 }
 function toggleWarning() {
