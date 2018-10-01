@@ -298,6 +298,8 @@ function createNewPuzzle(rows, cols) {
   document.getElementById("main").innerHTML = "";
   createGrid(xw.rows, xw.cols);
 
+  // reset history on new puzzle
+  history = { pos: null, steps: [] };
   isSymmetrical = true;
   current = {
     "row": 0,
