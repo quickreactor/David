@@ -374,6 +374,7 @@ function keyboardHandler(e) {
     // flags
     isMutated = false;
     let symMutated = false;
+    let forceNextInput = null;
 
     // symmetry
     const symRow = xw.rows - 1 - current.row;
@@ -433,20 +434,25 @@ function keyboardHandler(e) {
             }
           }*/
           // move the cursor
-          e = new Event('keydown');
+          /*e = new Event('keydown');
           if (current.direction == ACROSS) {
             e.which = keyboard.right;
           } else {
             e.which = keyboard.down;
-          }
+          }*/
           isMutated = true;
+
+          // fake input
+          forceNextInput = current.direction == ACROSS ? keyboard.right : keyboard.down;
         }
 
       }
       if (e.which == keyboard.black) {
         if (xw.fill[current.row][current.col] == BLACK) { // if already black...
-          e = new Event('keydown');
-          e.which = keyboard.delete; // make it a white square
+          // e = new Event('keydown');
+          // e.which = keyboard.delete; // make it a white square
+          // fake input
+          forceNextInput = keyboard.delete;
         } else {
           xw.fill[current.row] = xw.fill[current.row].slice(0, current.col) + BLACK + xw.fill[current.row].slice(current.col + 1);
           if (isSymmetrical) {
@@ -470,12 +476,14 @@ function keyboardHandler(e) {
             symMutated = true;
           }
         } else { // move the cursor
-          e = new Event('keydown');
+          /*e = new Event('keydown');
           if (current.direction == ACROSS) {
             e.which = keyboard.left;
           } else {
             e.which = keyboard.up;
-          }
+          }*/
+          // fake input
+          forceNextInput = current.direction == ACROSS ? keyboard.left : keyboard.up;
         }
         isMutated = true;
       }
@@ -484,6 +492,8 @@ function keyboardHandler(e) {
       const isFakeEvent = e.key == undefined;
       console.log('is fake', isFakeEvent, e.which, e.key, e.key == undefined);
 
+      //
+      //
       // save to history before cursor is moved
       if (!isFakeEvent && isMutated) {
 
@@ -510,6 +520,20 @@ function keyboardHandler(e) {
         // update index
         history.pos = history.steps.length - 1;
       }
+
+      //
+      // after history step (moved here from inside flow)
+      //
+      // intervene with fake input first
+      //
+      if (forceNextInput != null) {
+        e = new Event('keydown');
+        e.which = forceNextInput;
+      }
+
+      //
+      // actual user direction input
+      //
       if (e.which >= keyboard.left && e.which <= keyboard.down) {
         e.preventDefault();
 
@@ -584,7 +608,7 @@ function updateUI() {
 }
 
 function updateGridUI() {
-  console.log('updateGridUI()');
+  // console.log('updateGridUI()');
   for (let i = 0; i < xw.rows; i++) {
     for (let j = 0; j < xw.cols; j++) {
       //console.log('i,j', i, j);
