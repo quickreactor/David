@@ -472,6 +472,9 @@ function keyboardHandler(e) {
           // fill it
           xw.fill[current.row] = xw.fill[current.row].slice(0, current.col) + newFill + xw.fill[current.row].slice(current.col + 1);
 
+          //
+          isMutated = true;
+
           // save history object
           let histObj = {
             row: current.row,
@@ -588,9 +591,7 @@ function updateGridUI() {
       //console.log('i,j', i, j);
       const activeCell = grid.querySelector('[data-row="' + i + '"]').querySelector('[data-col="' + j + '"]');
       let fill = xw.fill[i][j];
-      if (fill != " ") {
-      // console.log(i, j, fill)
-      }
+
       // remove warning color
       if (!useWarning) activeCell.classList.remove("warning");
 
