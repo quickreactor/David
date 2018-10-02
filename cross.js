@@ -988,7 +988,7 @@ function toggleShortcuts() {
   warningButton.classList.toggle("button-on");
   buttonState = warningButton.getAttribute("data-state");
   warningButton.setAttribute("data-state", (buttonState == "on") ? "off" : "on");
-  warningButton.setAttribute("data-tooltip", "Turn " + buttonState + " keyboard shortcuts");
+  warningButton.setAttribute("data-tooltip", (buttonState == "on" ? "Show" : "Hide") + " keyboard shortcuts");
   // updateGridUI();
   let notification = document.getElementsByClassName("notification")[0];
   notification.classList.toggle("hidden");
