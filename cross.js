@@ -37,7 +37,7 @@ const DEFAULT_SIZE = 15;
 const DEFAULT_TITLE = "Untitled";
 const DEFAULT_AUTHOR = "Anonymous";
 const DEFAULT_CLUE = "(blank clue)";
-const DEFAULT_NOTIFICATION_LIFETIME = 10; // in seconds
+// const DEFAULT_NOTIFICATION_LIFETIME = 10; // in seconds
 
 let history = { pos: null, steps: [] };
 let isSymmetrical = true;
@@ -210,9 +210,9 @@ class Notification {
     this.message = message;
     this.id = String(randomNumber(1, 10000));
     this.post();
-    if (lifetime) {
-      this.dismiss(lifetime);
-    }
+    // if (lifetime) {
+    //   this.dismiss(lifetime);
+    // }
   }
 
   post() {
@@ -220,7 +220,8 @@ class Notification {
     div.setAttribute("id", this.id);
     div.setAttribute("class", "notification");
     div.innerHTML = this.message;
-    div.addEventListener('click', this.dismiss);
+    div.addEventListener('click', toggleShortcuts);
+    // div.addEventListener('click', this.dismiss);
     document.getElementById("footer").appendChild(div);
   }
 
@@ -228,11 +229,11 @@ class Notification {
     document.getElementById(this.id).innerHTML = message;
   }
 
-  dismiss(seconds = 0) {
-    let div = document.getElementById(this.id);
-    // seconds = (seconds === true) ? 10 : seconds;
-    setTimeout(function () { div.remove(); }, seconds * 1000);
-  }
+  // dismiss(seconds = 0) {
+  //   let div = document.getElementById(this.id);
+  //   // seconds = (seconds === true) ? 10 : seconds;
+  //   setTimeout(function () { div.remove(); }, seconds * 1000);
+  // }
 }
 
 class Interface {
@@ -978,6 +979,19 @@ function toggleWarning() {
   warningButton.setAttribute("data-state", (buttonState == "on") ? "off" : "on");
   warningButton.setAttribute("data-tooltip", "Turn " + buttonState + " symmetry warning");
   updateGridUI();
+}
+
+function toggleShortcuts() {
+  // useWarning = !useWarning;
+  //update UI button
+  let warningButton = document.getElementById("toggle-shortcuts");
+  warningButton.classList.toggle("button-on");
+  buttonState = warningButton.getAttribute("data-state");
+  warningButton.setAttribute("data-state", (buttonState == "on") ? "off" : "on");
+  warningButton.setAttribute("data-tooltip", "Turn " + buttonState + " keyboard shortcuts");
+  // updateGridUI();
+  let notification = document.getElementsByClassName("notification")[0];
+  notification.classList.toggle("hidden");
 }
 
 // function toggleHelp() {
