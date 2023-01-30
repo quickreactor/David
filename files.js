@@ -407,7 +407,7 @@ function convertPuzzleToJSON() {
 }
 
 function printPDF(style) {
-  let doc = new jsPDF('p', 'pt');
+  let doc = new jsPDF('l', 'pt');
   if (style) {
     style = style.toUpperCase();
   }
