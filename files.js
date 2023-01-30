@@ -590,7 +590,7 @@ function layoutPDFClues(doc, style) {
       };
       doc.setFont(format.font);
       doc.setFontSize(format.fontSize);
-      let currentColumn = 1;
+      let currentColumn = 0;
       let x = format.marginLeft;
       let y = format.marginTop[currentColumn];
       const acrossTitle = [{ "label": "ACROSS", "clue": " " }];
