@@ -407,7 +407,7 @@ function convertPuzzleToJSON() {
 }
 
 function printPDF(style) {
-  let doc = new jsPDF('l', 'pt');
+  let doc = new jsPDF('l', 'pt', [960,470]);
   if (style) {
     style = style.toUpperCase();
   }
@@ -583,9 +583,9 @@ function layoutPDFClues(doc, style) {
         "labelWidth": 13,
         "clueWidth": 94,
         "columnSeparator": 18,
-        "marginTop": [465, 465, 465, 85],
+        "marginTop": [85, 85, 85, 85],
         "marginBottom": doc.internal.pageSize.height - 50,
-        "marginLeft": 50,
+        "marginLeft": 424,
         "marginRight": 0
       };
       doc.setFont(format.font);
