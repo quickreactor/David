@@ -52,11 +52,17 @@ let solveWorkerState = null;
 let solveTimeout = null;
 let solveWordlist = null;
 let solvePending = [];
+let gridSizeInput = document.getElementById("grid-size");
+let gridSizeRows = parseInt(document.getElementById("grid-size").value);
+gridSizeInput.addEventListener("change", function(e) {
+  console.log(e.target.value);
+  gridSizeRows = e.target.value;
+})
 
 //____________________
 // C L A S S E S
 class Crossword {
-  constructor(rows = DEFAULT_SIZE, cols = DEFAULT_SIZE) {
+  constructor(rows = gridSizeRows || DEFAULT_SIZE, cols = gridSizeRows || DEFAULT_SIZE) {
     this.clues = {};
     this.title = DEFAULT_TITLE;
     this.author = DEFAULT_AUTHOR;
@@ -286,8 +292,8 @@ function createNewPuzzle(rows, cols) {
   xw["clues"] = {};
   xw["title"] = DEFAULT_TITLE;
   xw["author"] = DEFAULT_AUTHOR;
-  xw["rows"] = rows || DEFAULT_SIZE;
-  xw["cols"] = cols || xw.rows;
+  xw["rows"] = gridSizeRows || rows || DEFAULT_SIZE;
+  xw["cols"] = gridSizeRows || cols || xw.rows;
   xw["fill"] = [];
   for (let i = 0; i < xw.rows; i++) {
     xw.fill.push("");
@@ -308,9 +314,9 @@ function createNewPuzzle(rows, cols) {
     "acrossWord": '',
     "downWord": '',
     "acrossStartIndex": 0,
-    "acrossEndIndex": DEFAULT_SIZE,
+    "acrossEndIndex": gridSizeRows || DEFAULT_SIZE,
     "downStartIndex": 0,
-    "downEndIndex": DEFAULT_SIZE,
+    "downEndIndex": gridSizeRows || DEFAULT_SIZE,
     "direction": ACROSS
   };
 
@@ -861,8 +867,8 @@ function getWordAt(row, col, direction, setCurrentWordIndices) {
 function getWordIndices(text, position) {
   let start = text.slice(0, position).lastIndexOf(BLACK);
   start = (start == -1) ? 0 : start + 1;
-  let end = text.slice(position, DEFAULT_SIZE).indexOf(BLACK);
-  end = (end == -1) ? DEFAULT_SIZE : Number(position) + end;
+  let end = text.slice(position, gridSizeRows).indexOf(BLACK);
+  end = (end == -1) ? gridSizeRows : Number(position) + end;
   return [start, end];
 }
 
